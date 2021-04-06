@@ -14,7 +14,21 @@ sim_name := none
 #########################################################################################
 # include shared variables
 #########################################################################################
-SUB_PROJECT ?= vcu118
+SUB_PROJECT ?= codesign
+
+ifeq ($(SUB_PROJECT),codesign)
+	SBT_PROJECT       ?= fpga_platforms
+	MODEL             ?= VCU118FPGATestHarness
+	VLOG_MODEL        ?= VCU118FPGATestHarness
+	MODEL_PACKAGE     ?= chipyard.fpga.vcu118
+	CONFIG            ?= CodesignVCU118Config
+	CONFIG_PACKAGE    ?= chipyard.fpga.vcu118
+	GENERATOR_PACKAGE ?= chipyard
+	TB                ?= none # unused
+	TOP               ?= ChipTop
+	BOARD             ?= vcu118
+	FPGA_BRAND        ?= xilinx
+endif
 
 ifeq ($(SUB_PROJECT),vcu118)
 	SBT_PROJECT       ?= fpga_platforms
