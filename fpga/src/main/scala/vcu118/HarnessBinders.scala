@@ -25,7 +25,7 @@ class WithUART extends OverrideHarnessBinder({
 class WithSPISDCard extends OverrideHarnessBinder({
   (system: HasPeripherySPI, th: BaseModule with HasHarnessSignalReferences, ports: Seq[SPIPortIO]) => {
     th match { case vcu118th: VCU118FPGATestHarnessImp => {
-      vcu118th.vcu118Outer.io_spi_bb.bundle <> ports.head
+      vcu118th.vcu118Outer.io_spi_bb.get.bundle <> ports.head
     } }
   }
 })
