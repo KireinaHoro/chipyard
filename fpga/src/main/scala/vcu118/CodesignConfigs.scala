@@ -1,18 +1,19 @@
 package chipyard.fpga.vcu118
 
 import sys.process._
-
 import chipsalliance.rocketchip.config.Config
 import chipyard.config.AbstractConfig
 import freechips.rocketchip.devices.tilelink.BootROMLocated
 import freechips.rocketchip.diplomacy.DTSTimebase
 import freechips.rocketchip.subsystem.{ExtMem, PeripheryBusKey, WithNBigCores}
 import gemmini.DefaultGemminiConfig
-import sifive.fpgashells.shell.xilinx.{VCU118DDRSize, VCU118ShellPMOD}
+import sifive.fpgashells.shell.xilinx.{VCU118DDRSize, WithVCU118ShellPMODJTAG}
 import testchipip.SerialTLKey
 
 class CodesignVCU118 extends Config(
-  new WithUART ++
+  new WithFPGAFreq50MHz ++
+    new WithVCU118ShellPMODJTAG ++
+    new WithUART ++
     new WithDDRMem ++
     new WithUARTIOPassthrough ++
     new WithSPIIOPassthrough ++
@@ -42,7 +43,6 @@ class CodesignModifications extends Config((site, here, up) => {
   }
   case ExtMem => up(ExtMem, site).map(x => x.copy(master = x.master.copy(size = site(VCU118DDRSize)))) // set extmem to DDR size
   case SerialTLKey => None // remove serialized tl port
-  case VCU118ShellPMOD => "JTAG"
 })
 
 class CodesignVCU118Config extends Config(
