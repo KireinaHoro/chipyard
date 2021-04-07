@@ -28,7 +28,8 @@ class VCU118FPGATestHarness(override implicit val p: Parameters) extends VCU118S
   def dp = designParameters
 
   val pmod_is_sdio  = p(VCU118ShellPMOD) == "SDIO"
-  val jtag_location = Some(if (pmod_is_sdio) "FMC_J2" else "PMOD_J52")
+  val pmod_j53_is_jtag = p(VCU118ShellPMOD2) == "PMODJ53_JTAG"
+  val jtag_location = Some(if (pmod_is_sdio) (if (pmod_j53_is_jtag) "PMOD_J53" else "FMC_J2") else "PMOD_J52")
 
   // Order matters; ddr depends on sys_clock
   val uart      = Overlay(UARTOverlayKey, new UARTVCU118ShellPlacer(this, UARTShellInput()))
