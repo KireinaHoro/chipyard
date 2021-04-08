@@ -13,13 +13,18 @@ import gemmini.DefaultGemminiConfig
 import sifive.fpgashells.shell._
 import sifive.fpgashells.shell.xilinx._
 
-class WithJTAGPassthrough extends OverrideHarnessBinder({
-  (_: HasPeripheryDebug, _: HasHarnessSignalReferences, ports: Seq[Data]) => {
-    ports map {
-      case j: JTAGIO =>
-        val io_jtag_pins_temp = IO(Flipped(j.cloneType)).suggestName("board_jtag")
-        io_jtag_pins_temp <> j
-    }
+class WithBoardJTAG extends OverrideHarnessBinder({
+  (_: HasPeripheryDebug, th: HasHarnessSignalReferences, ports: Seq[Data]) => {
+    th match { case vcu118th: VCU118FPGATestHarnessImp => {
+      ports.map {
+        case sj: JTAGIO =>
+          val bj = vcu118th.vcu118Outer.io_jtag_bb.getWrappedValue
+          sj.TDI := bj.TDI
+          sj.TMS := bj.TMS
+          sj.TCK := bj.TCK
+          bj.TDO := sj.TDO
+      }
+    }}
   }
 })
 
@@ -32,7 +37,7 @@ class CodesignVCU118 extends Config(
   new WithUARTIOPassthrough ++
   new WithSPIIOPassthrough ++
   new WithTLIOPassthrough ++
-  new WithJTAGPassthrough ++
+  new WithBoardJTAG ++
   new WithDefaultPeripherals ++
   new chipyard.config.WithTLBackingMemory ++ // use TL backing memory
   new WithSystemModifications ++ // setup busses, use sdboot bootrom, setup ext. mem. size

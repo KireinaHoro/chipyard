@@ -93,6 +93,9 @@ class VCU118FPGATestHarness(override implicit val p: Parameters) extends VCU118S
   val ddrClient = TLClientNode(Seq(inParams.master))
   ddrNode := ddrClient
 
+  /** JTAG */
+  val io_jtag_bb = dp(JTAGDebugOverlayKey).head.place(JTAGDebugDesignInput()).overlayOutput.jtag
+
   // module implementation
   override lazy val module = new VCU118FPGATestHarnessImp(this)
 }
